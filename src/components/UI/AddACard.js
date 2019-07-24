@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card, CardItem, Button, Item, Label, Input } from 'native-base';
+import { Card, CardItem, Button,Right,Item,Label,Input } from 'native-base';
 import AppAsyncStorage from '../common/AppAsyncStorage';
 class AddACard extends Component {
     constructor(props) {
@@ -9,18 +9,17 @@ class AddACard extends Component {
             cardValue: '',
             cards: []
         }
-        this.loadCards();//<-- nuevo
+        this.loadCards();
     }
-
-    //esto es lo nuevo
+  
     async loadCards() {
         console.log('cargando las cartas')
         let mazo = JSON.parse(await AppAsyncStorage.retrieveData("cards"))
         this.setState({
-            cards: mazo != null ? mazo : [] 
+            cards: mazo != null ? mazo : []
         })
     }
-    //nuevo
+   
 
     static navigationOptions = ({ navigation }) => {
         return {
@@ -37,6 +36,10 @@ class AddACard extends Component {
     }
 
     handleSubmit() {
+        if(this.state.cardValue==''){
+            alert('tienes que ingresar algo')
+            return
+        }
         let cardsCopy = this.state.cards.slice()
         let card = {
             value: this.state.cardValue
@@ -45,35 +48,42 @@ class AddACard extends Component {
         this.saveCard(cardsCopy)
 
     }
-    async saveCard(cardsCopy){
-        await AppAsyncStorage.storeData("cards",JSON.stringify(cardsCopy))
+    async saveCard(cardsCopy) {
+        await AppAsyncStorage.storeData("cards", JSON.stringify(cardsCopy))
         alert('Tarjeta Ingresada')
         this.setState({
             cardValue: '',
             cards: cardsCopy
         })
     }
-   
+
     goToTraining() {
         const { navigate } = this.props.navigation;
-        navigate('Training', { cards: this.state.cards })
+        navigate('Training')
     }
-   
+    goToDeck(){
+        const { navigate } = this.props.navigation;
+        navigate('Deck')
+    }
+
     render() {
         return (
-
-            <View style={{ padding: 10 }}>
+            <View style={[styles.container, { padding: 10 }]}>
                 <Card>
                     <CardItem header>
                         <Text>
                             Añade una tarjeta
                         </Text>
+                        <Right>
+                            <Text>
+                                Cartas en mazo: {this.state.cards.length}
+                            </Text>
+                        </Right>
                     </CardItem>
                     <CardItem>
                         <Item floatingLabel>
                             <Label>Front</Label>
                             <Input
-
                                 value={this.state.cardValue}
                                 onChangeText={
                                     (text) => {
@@ -96,16 +106,26 @@ class AddACard extends Component {
                         </Button>
                     </CardItem>
                 </Card>
-                
+
                 <Button block
+                    style={{ backgroundColor: '#07889b',marginTop:10 }}
                     disabled={this.state.cards.length == 0}
                     onPress={() => this.goToTraining()}
                 >
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         Entrenamiento
                     </Text>
                 </Button>
-               
+                <Button block
+                    style={{ backgroundColor: '#07889b',marginTop:10 }}
+                    disabled={this.state.cards.length == 0}
+                    onPress={() => this.goToDeck()}
+                >
+                    <Text style={{ color: 'white' }}>
+                        Mi mazo
+                    </Text>
+                </Button>
+
             </View>
 
 
@@ -117,7 +137,7 @@ export default AddACard;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'skyblue',
+        backgroundColor: '#f4f4f4',
         alignItems: 'center',
         justifyContent: 'center',
     },

@@ -2,6 +2,7 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 // import AddACard from "./src/components/UI/AddACard";
 import Training from "./src/components/UI/Training";
 import AddACard from "./src/components/UI/AddACard";
+import Deck from "./src/components/UI/Deck";
 
 const AppNavigator = createStackNavigator({
   AddACard: {
@@ -9,6 +10,9 @@ const AppNavigator = createStackNavigator({
   },
   Training :{
       screen:Training
+  },
+  Deck:{
+    screen:Deck
   }
 });
 

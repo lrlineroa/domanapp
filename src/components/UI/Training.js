@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text,StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Card, CardItem, Button } from 'native-base';
+import AppAsyncStorage from '../common/AppAsyncStorage';
 
 class Training extends Component {
     //nuevo
@@ -10,16 +11,32 @@ class Training extends Component {
         }
 
     };
-    //nuevo
+
     constructor(props) {
         super(props);
         this.state = {
-            currentIndex: 0,//<--nuevo
-            cards: props.navigation.getParam('cards')//<--nuevo
+            currentIndex: 0,
+            cards: []
         }
+        this.loadCards();
     }
+
+    async loadCards() {
+        let mazo = JSON.parse(await AppAsyncStorage.retrieveData("cards"))
+        setTimeout(() => {
+            this.setState({
+                cards: mazo != null ? mazo : []
+            })
+        }, 5000);
+    }
+
     render() {
-        console.log('cards tra : ' + JSON.stringify(this.state.cards))//<--para testear
+        if (this.state.cards.length == 0)
+            return (
+            <View style={styles.container}>
+                <ActivityIndicator />
+                <Text>Cargando mazo...</Text>
+            </View>)
         return (<View style={styles.container}>
             <Card>
                 <CardItem>
@@ -29,6 +46,7 @@ class Training extends Component {
                 </CardItem>
             </Card>
             <Button
+                style={{ alignSelf: 'center', padding: 5, backgroundColor: '#07889b' }}
                 onPress={() => this.setState({
                     currentIndex: this.state.currentIndex + 1
                 })}
@@ -36,7 +54,7 @@ class Training extends Component {
                     this.state.currentIndex == this.state.cards.length - 1
                 }
             >
-                <Text>Siguiente</Text>
+                <Text style={{ color: 'white' }}>Siguiente</Text>
 
             </Button>
         </View>);
@@ -46,9 +64,9 @@ class Training extends Component {
 export default Training;
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: 'skyblue',
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+        backgroundColor: '#f4f4f4',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-  });
+});
